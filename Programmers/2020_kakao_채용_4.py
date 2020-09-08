@@ -1,130 +1,79 @@
-from operator import itemgetter
-
-def solution(n, build_frame):
-    answer = []
-    
-    for i in range(len(build_frame)):
-        x = build_frame[i][0]
-        y = build_frame[i][1]
-        a = build_frame[i][2]
-        b = build_frame[i][3]
+class Node :
+    def __init__(self, val, leaf = False):
+        self.val = val
+        self.child = {}
+        self.depth = 0
+        self.leaf = leaf
         
-        # 설치
-        if b == 1:
-            #기둥
-            if a == 0 :
-                # 기둥 위
-                if y == 0:
-                    answer.append([x,y,0])
-                else: 
-                    if [x,y-1,0] in answer :
-                        answer.append([x,y,0])
-                    #보 한쪽 끝
-                    else :
-                        if [x-1,y,1] in answer or [x,y,1] in answer:
-                            #or
-                            #if [x,y,1] in answer and not [x,y,1] in answer:
-                            answer.append([x,y,0])
-                            #if not [x,y,1] in answer and [x,y,1] in answer:
-                                #answer.append([x,y,0])   
-            #보
-            else: 
-                # 양 끝이 다른 보와
-                if [x-1,y,1] in answer and [x+1,y,1] in answer:
-                    answer.append([x,y,1])
-                else:
-                    if [x,y-1,0] in answer or [x+1,y-1,0] in answer:
-                        #양쪽은 x
-                        #if [x,y-1,0] in answer and not [x+1,y-1,0] in answer:
-                        answer.append([x,y,1])
-                        #if not [x,y-1,0] in answer and [x+1,y-1,0] in answer:
-                            #answer.append([x,y,1])
-        # 제거
-        else :
-            #기둥
-            if a == 0:
-                if [x,y,0] in answer:
-                    check_a = False
-                    check_b = False
-                    check_c = False
-                    # 윗 기둥 버틸 수 있나
-                    if [x,y+1,0] in answer:
-                        if [x, y+1, 1] in answer or [x-1, y+1, 1] in answer:
-                            check_a = True
-                    else:
-                        check_a = True
-                    # 좌 보가 버틸 수 있나
-                    if [x-1,y+1,1] in answer:
-                        if [x-1,y,0] in answer:
-                                check_b = True
-                        else:
-                            if [x-2,y+1,1] in answer and [x,y+1,1] in answer:
-                                check_b = True
-                    else:
-                        check_b = True
-                    # 우 보가 버틸 수 있나
-                    if [x,y+1,1] in answer:
-                        if [x+1,y,0] in answer:
-                            check_c = True
-                        else:
-                            if [x-1,y+1,1] in answer and [x+1,y+1,1] in answer:
-                                check_c = True  
-                    else:
-                        check_c = True
-                    # 셋 다 버틸 수 있으면
-                    if check_a and check_b and check_c:
-                        answer.remove([x,y,0])
-            #보
-            else:
-                if [x,y,1] in answer:
-                    check_1 = False
-                    check_2 = False
-                    check_3 = False
-                    check_4 = False
-                    # 좌 기둥 버틸 수 있나
-                    if [x,y,0] in answer :
-                        if [x, y-1,0] in answer:
-                            check_1 = True
-                        else :
-                            if [x-1,y,1] in answer:
-                                check_1 =True
-
-                    else :
-                        check_1 = True
-                    # 우 기둥 버틸 수 있나
-                    if [x+1,y,0] in answer :
-                        if [x+1, y-1,0] in answer:
-                            check_2 = True
-                        else :
-                            if [x+1,y,1] in answer :
-                                check_2 =True
-                    else :
-                        check_2= True
-                    # 좌 보가 버틸 수 있나
-                    if [x-1,y,1] in answer :
-                        # 옆에 기둥이 있거나
-                        if [x-1,y-1,0] in answer or [x,y-1,0] in answer:
-                            check_3 = True
-                        # 양 옆에 보가 있거나
-                        #else:
-                            #if [x-1,y,1] in answer and [x+1, y, 1] in answer:
-                                #check_3 = True
-                    else:
-                        check_3 = True
-                    # 우 보가 버틸 수 있나
-                    if [x+1,y,1] in answer :
-                        # 옆에 기둥이 있거나
-                        if [x+1,y-1,0] in answer or [x+2,y-1,0] in answer:
-                            check_4 = True
-                        # 양 옆에 보가 있거나
-                        #else:
-                            #if [x,y,1] in answer and [x+2, y, 1] in answer:
-                                #check_4 = True
-                    else :
-                        check_4 = True
-
-                    if check_1 and check_2 and check_3 and check_4:
-                        answer.remove([x,y,1])
+class Trie:
+    def __init__(self):
+        self.head = Node(None)
     
-    answer.sort(key=itemgetter(0,1,2))
+    def insert(self, string):
+        cur =  self.head
+        for c in string:
+            if c not in cur.child:
+                cur.child[c] = Node(c)
+            cur.depth += 1
+            #print(cur.val, ' 를 지나가는건 ', cur.depth, ' 개')
+            cur = cur.child[c]
+        cur.depth += 1
+        #print(cur.val, ' 를 지나가는건 ', cur.depth, ' 개')
+    
+    def search(self, prefix):
+        cur = self.head
+        for c in prefix:
+            if c in cur.child:
+                cur = cur.child[c]
+            else:
+                return 0
+        return cur.depth
+    
+def solution(words, queries):
+    answer = []
+    dic = {}
+    
+    for i in range(len(words)):
+        num = str(len(words[i]))
+        if not num in dic:
+            dic.update({num : [Trie(), Trie()]}) #[Trie / reverseed Trie]
+        dic[num][0].insert(words[i])
+        dic[num][1].insert(words[i][::-1])
+            
+    for que in queries:
+        le = len(que) #문자열 길이 ---> to find dic[le]
+        #print(le)
+        if not str(le) in dic:
+            answer.append(0)
+            continue
+
+        
+        if que[0] == '?' and que[len(que)-1] == '?':
+            answer.append(dic[str(le)][0].cnt)
+            continue
+        elif que[0] == '?':
+            #print(2)
+            s = que[::-1]
+            end = 0
+            #print(s)
+            for k in range(len(s)):
+                if s[k] == '?':
+                    end = k 
+                    break
+            #print(end)
+            answer.append(dic[str(le)][1].search(s[:end]))
+        elif que[len(que)-1] == '?':
+            #print(2)
+            end = 0
+            for k in range(len(que)):
+                if que[k] == '?':
+                    end = k 
+                    break
+            answer.append(dic[str(le)][0].search(que[:end]))
+        else :
+            answer.append(0)
     return answer
+
+words = ["frodo", "front", "frost", "frozen", "frame", "kakao"]
+queries = ["fro??", "????o", "fr???", "fro???", "pro?"]
+print(solution(words, queries))
