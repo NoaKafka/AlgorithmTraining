@@ -60,13 +60,6 @@ for idx in arr:
         dice[floor] = board[x][y]
         board[x][y] = 0
 
-   
-    print('f: ', floor, ' up : ', up, ' left : ', left)
-    
-    print(board)
-    print('------------------')
-
-
     answer.append(dice[abs(5-floor)])
 for i in answer:
     print(i)
