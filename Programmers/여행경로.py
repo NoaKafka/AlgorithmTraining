@@ -1,4 +1,3 @@
-import copy
 answer = []
 
 def DFS(graph, start_idx, visited):
