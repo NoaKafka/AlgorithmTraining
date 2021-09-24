@@ -35,12 +35,12 @@ def search(graph):
                                     y_min = y + dy[k]
                                 if y + dy[k] > y_max:
                                     y_max = y + dy[k]
-                arr = [[0] * (y_max - y_min + 1) for _ in range(x_max - x_min + 1)]
+                arr = [[0] * (y_max - y_min + 1) for _ in range(x_max - x_min)]
                 print(x_max-x_min+1)
                 print(x_max-y_min+1)
                 for k in range(len(history)):
                     x,y = history[k][0], history[k][1]
-                    arr[x-x_min-1][y-y_min-1] = 1
+                    arr[x-x_min][y-y_min] = 1
                 print(arr)
                 print('-------')
 
